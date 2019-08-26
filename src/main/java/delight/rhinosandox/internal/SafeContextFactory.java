@@ -14,24 +14,23 @@ import org.mozilla.javascript.Scriptable;
  * Also see https://github.com/flozano/rhino-sandbox-test/blob/master/src/main/java/com/flozano/rhino/sandbox/SandboxContextFactory.java
  */
 @SuppressWarnings("all")
-public class SafeContext extends ContextFactory {
+public class SafeContextFactory extends ContextFactory {
   public static class CountContext extends Context {
     private long startTime;
     
     private long instructions;
   }
   
-  private final static int INSTRUCTION_STEPS = 10000;
-  
+  public static int INSTRUCTION_STEPS = 1000;
+
   public long maxRuntimeInMs;
-  
   public int maxInstructions;
-  
+
   @Override
   public Context makeContext() {
-    final SafeContext.CountContext cx = new SafeContext.CountContext();
+    final SafeContextFactory.CountContext cx = new SafeContextFactory.CountContext();
     cx.setOptimizationLevel((-1));
-    cx.setInstructionObserverThreshold(SafeContext.INSTRUCTION_STEPS);
+    cx.setInstructionObserverThreshold(SafeContextFactory.INSTRUCTION_STEPS);
     return cx;
   }
   
@@ -53,12 +52,12 @@ public class SafeContext extends ContextFactory {
   @Override
   public void observeInstructionCount(final Context cx, final int instructionCount) {
     try {
-      final SafeContext.CountContext mcx = ((SafeContext.CountContext) cx);
+      final SafeContextFactory.CountContext mcx = ((SafeContextFactory.CountContext) cx);
       final long currentTime = System.currentTimeMillis();
       if (((this.maxRuntimeInMs > 0) && ((currentTime - mcx.startTime) > this.maxRuntimeInMs))) {
         throw new ScriptDurationException();
       }
-      mcx.instructions = (mcx.instructions + SafeContext.INSTRUCTION_STEPS);
+      mcx.instructions = (mcx.instructions + SafeContextFactory.INSTRUCTION_STEPS);
       if (((this.maxInstructions > 0) && (mcx.instructions > this.maxInstructions))) {
         throw new ScriptCPUAbuseException();
       }
@@ -69,7 +68,7 @@ public class SafeContext extends ContextFactory {
   
   @Override
   public Object doTopCall(final Callable callable, final Context cx, final Scriptable scope, final Scriptable thisObj, final Object[] args) {
-    final SafeContext.CountContext mcx = ((SafeContext.CountContext) cx);
+    final SafeContextFactory.CountContext mcx = ((SafeContextFactory.CountContext) cx);
     mcx.startTime = System.currentTimeMillis();
     mcx.instructions = 0;
     return super.doTopCall(callable, cx, scope, thisObj, args);

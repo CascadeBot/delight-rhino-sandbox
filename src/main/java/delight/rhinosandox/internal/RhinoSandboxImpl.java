@@ -1,24 +1,20 @@
 package delight.rhinosandox.internal;
 
 import delight.rhinosandox.RhinoSandbox;
-import delight.rhinosandox.internal.RhinoEval;
-import delight.rhinosandox.internal.RhinoEvalDummy;
-import delight.rhinosandox.internal.SafeClassShutter;
-import delight.rhinosandox.internal.SafeContext;
-import delight.rhinosandox.internal.SafeWrapFactory;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 @SuppressWarnings("all")
 public class RhinoSandboxImpl implements RhinoSandbox {
-  private SafeContext contextFactory;
+  private SafeContextFactory contextFactory;
   
   private ScriptableObject globalScope;
   
@@ -46,8 +42,8 @@ public class RhinoSandboxImpl implements RhinoSandbox {
       if ((this.contextFactory != null)) {
         return;
       }
-      SafeContext _safeContext = new SafeContext();
-      this.contextFactory = _safeContext;
+      SafeContextFactory _safeContextFactory = new SafeContextFactory();
+      this.contextFactory = _safeContextFactory;
       synchronized(RhinoSandboxImpl.ctxFactoryLock) {
         boolean _hasExplicitGlobal = ContextFactory.hasExplicitGlobal();
         boolean _not = (!_hasExplicitGlobal);
