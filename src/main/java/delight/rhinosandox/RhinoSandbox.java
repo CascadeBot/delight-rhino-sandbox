@@ -1,6 +1,8 @@
 package delight.rhinosandox;
 
 import java.util.Map;
+
+import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
 @SuppressWarnings("all")
@@ -21,7 +23,7 @@ public interface RhinoSandbox {
   /**
    * Will make this class available to instantiate in Rhino scripts.
    */
-  public abstract RhinoSandbox inject(final Class<ScriptableObject> clazz);
+  public abstract RhinoSandbox inject(final Class<? extends Scriptable> clazz);
   
   /**
    * Sets the maximum instructions allowed for script execution.
