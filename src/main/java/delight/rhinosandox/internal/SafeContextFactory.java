@@ -21,19 +21,28 @@ public class SafeContextFactory extends ContextFactory {
     private long instructions;
   }
   
-  public static int INSTRUCTION_STEPS = 1000;
-
   public long maxRuntimeInMs;
   public int maxInstructions;
+
+  private int instructionSteps = 10000;
+
+  public SafeContextFactory() {
+    super();
+  }
+
+  public SafeContextFactory(int instructionSteps) {
+    super();
+    this.instructionSteps = instructionSteps;
+  }
 
   @Override
   public Context makeContext() {
     final SafeContextFactory.CountContext cx = new SafeContextFactory.CountContext();
     cx.setOptimizationLevel((-1));
-    cx.setInstructionObserverThreshold(SafeContextFactory.INSTRUCTION_STEPS);
+    cx.setInstructionObserverThreshold(instructionSteps);
     return cx;
   }
-  
+
   @Override
   public boolean hasFeature(final Context cx, final int featureIndex) {
     switch (featureIndex) {
@@ -57,7 +66,7 @@ public class SafeContextFactory extends ContextFactory {
       if (((this.maxRuntimeInMs > 0) && ((currentTime - mcx.startTime) > this.maxRuntimeInMs))) {
         throw new ScriptDurationException();
       }
-      mcx.instructions = (mcx.instructions + SafeContextFactory.INSTRUCTION_STEPS);
+      mcx.instructions = (mcx.instructions + mcx.getInstructionObserverThreshold());
       if (((this.maxInstructions > 0) && (mcx.instructions > this.maxInstructions))) {
         throw new ScriptCPUAbuseException();
       }

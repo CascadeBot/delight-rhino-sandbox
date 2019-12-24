@@ -14,14 +14,16 @@ import java.util.Set;
 
 @SuppressWarnings("all")
 public class RhinoSandboxImpl implements RhinoSandbox {
+
   private SafeContextFactory contextFactory;
-  
+
   private ScriptableObject globalScope;
-  
+
   private ScriptableObject safeScope;
-  
+
   private int instructionLimit;
-  
+  private final int instructionSteps;
+
   private long maxDuration;
   
   private boolean useSafeStandardObjects;
@@ -42,7 +44,7 @@ public class RhinoSandboxImpl implements RhinoSandbox {
       if ((this.contextFactory != null)) {
         return;
       }
-      SafeContextFactory _safeContextFactory = new SafeContextFactory();
+      SafeContextFactory _safeContextFactory = new SafeContextFactory(this.instructionSteps);
       this.contextFactory = _safeContextFactory;
       synchronized(RhinoSandboxImpl.ctxFactoryLock) {
         boolean _hasExplicitGlobal = ContextFactory.hasExplicitGlobal();
@@ -178,11 +180,11 @@ public class RhinoSandboxImpl implements RhinoSandbox {
   }
   
   @Override
-  public RhinoSandbox inject(final Class<ScriptableObject> clazz) {
+  public RhinoSandbox inject(final Class<? extends Scriptable> clazz) {
     try {
       RhinoSandboxImpl _xblockexpression = null;
       {
-        ScriptableObject.<ScriptableObject>defineClass(this.globalScope, clazz);
+        ScriptableObject.defineClass(this.globalScope, clazz);
         this.allow(clazz);
         _xblockexpression = this;
       }
@@ -221,13 +223,14 @@ public class RhinoSandboxImpl implements RhinoSandbox {
     }
   }
   
-  public RhinoSandboxImpl() {
+  public RhinoSandboxImpl(int instructionSteps) {
     HashMap<String, Object> _hashMap = new HashMap<String, Object>();
     this.inScope = _hashMap;
     this.useSafeStandardObjects = false;
     this.sealScope = true;
     SafeClassShutter _safeClassShutter = new SafeClassShutter();
     this.classShutter = _safeClassShutter;
+    this.instructionSteps = instructionSteps;
   }
   
   @Override
