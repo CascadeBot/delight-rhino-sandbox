@@ -40,6 +40,7 @@ public class SafeContextFactory extends ContextFactory {
     final SafeContextFactory.CountContext cx = new SafeContextFactory.CountContext();
     cx.setOptimizationLevel((-1));
     cx.setInstructionObserverThreshold(instructionSteps);
+    cx.setLanguageVersion(200);
     return cx;
   }
 
